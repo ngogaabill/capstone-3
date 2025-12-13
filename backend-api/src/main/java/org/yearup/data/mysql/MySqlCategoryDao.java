@@ -50,6 +50,21 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao {
     @Override
     public Category getById(int categoryId) {
         // get category by id
+        String sql = """
+                SELECT * FROM categories
+                WHERE category_id = ?;
+                """;
+        try (Connection conn = getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setInt(1, categoryId);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            return new Category(resultSet.getInt("category_id"), resultSet.getString("name"), resultSet.getString("description"));
+
+        } catch (SQLException e) {
+            System.err.println("Can't Find Category With: " + categoryId);
+        }
         return null;
     }
 
