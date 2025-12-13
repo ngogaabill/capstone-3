@@ -29,16 +29,7 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao {
              ResultSet resultSet = preparedStatement.executeQuery();) {
 
             while (resultSet.next()) {
-                String name = resultSet.getString("name");
-                String description = resultSet.getString("description");
-                int categoryId = resultSet.getInt("category_id");
-
-                Category c = new Category();
-                c.setCategoryId(categoryId);
-                c.setName(name);
-                c.setDescription(description);
-
-                categories.add(c);
+                categories.add(mapRow(resultSet));// helper
             }
             return categories;
         } catch (SQLException e) {
@@ -59,18 +50,45 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao {
             preparedStatement.setInt(1, categoryId);
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-            return new Category(resultSet.getInt("category_id"), resultSet.getString("name"), resultSet.getString("description"));
-
+            if (resultSet.next()) {
+                return mapRow(resultSet); // reuse helper
+            }
+            return null;
         } catch (SQLException e) {
             System.err.println("Can't Find Category With: " + categoryId);
+            return null;
         }
-        return null;
     }
 
     @Override
     public Category create(Category category) {
-        // create a new category
+
+        String sql = "INSERT INTO categories(name, description) " +
+                " VALUES (?, ?);";
+
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);) {
+
+            statement.setString(1, category.getName());
+            statement.setString(2, category.getDescription());
+
+            int rowsAffected = statement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                // Retrieve the generated keys
+                ResultSet generatedKeys = statement.getGeneratedKeys();
+
+                if (generatedKeys.next()) {
+                    // Retrieve the auto-incremented ID
+                    int orderId = generatedKeys.getInt(1);
+
+                    // get the newly inserted category
+                    return getById(orderId);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         return null;
     }
 
@@ -81,7 +99,20 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao {
 
     @Override
     public void delete(int categoryId) {
-        // delete category
+        {
+
+            String sql = "DELETE FROM categories " +
+                    " WHERE category_id = ?;";
+
+            try (Connection connection = getConnection()) {
+                PreparedStatement statement = connection.prepareStatement(sql);
+                statement.setInt(1, categoryId);
+
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private Category mapRow(ResultSet row) throws SQLException {

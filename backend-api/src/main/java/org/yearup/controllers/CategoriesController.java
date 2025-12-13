@@ -37,8 +37,7 @@ public class CategoriesController {
     // add the appropriate annotation for a get action
     @GetMapping("{id}")
     public Category getById(@PathVariable int id) {
-        try
-        {
+        try {
             var category = categoryDao.getById(id);
             if(category == null)
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -61,9 +60,11 @@ public class CategoriesController {
 
     // add annotation to call this method for a POST action
     // add annotation to ensure that only an ADMIN can call this function
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public Category addCategory(@RequestBody Category category) {
         // insert the category
-        return null;
+        return this.categoryDao.create(category);
     }
 
     // add annotation to call this method for a PUT (update) action - the url path must include the categoryId
@@ -74,8 +75,20 @@ public class CategoriesController {
 
 
     // add annotation to call this method for a DELETE action - the url path must include the categoryId
+    @DeleteMapping("{id}")
     // add annotation to ensure that only an ADMIN can call this function
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteCategory(@PathVariable int id) {
         // delete the category by id
+        try {
+            var category = categoryDao.getById(id);
+
+            if(category == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }
+            this.categoryDao.delete(id);
+        } catch(Exception ex) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
+        }
     }
 }
