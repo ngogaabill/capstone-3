@@ -94,25 +94,38 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao {
 
     @Override
     public void update(int categoryId, Category category) {
-        // update category
+        String sql = """ 
+                UPDATE categories
+                SET name = ? , description = ?
+                WHERE category_id = ?;
+                """;
+
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);) {
+
+            statement.setString(1, category.getName());
+            statement.setString(2, category.getDescription());
+            statement.setInt(3, categoryId);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void delete(int categoryId) {
-        {
+        String sql = "DELETE FROM categories " +
+                " WHERE category_id = ?;";
 
-            String sql = "DELETE FROM categories " +
-                    " WHERE category_id = ?;";
+        try (Connection connection = getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql);) {
+            statement.setInt(1, categoryId);
 
-            try (Connection connection = getConnection()) {
-                PreparedStatement statement = connection.prepareStatement(sql);
-                statement.setInt(1, categoryId);
-
-                statement.executeUpdate();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
+
     }
 
     private Category mapRow(ResultSet row) throws SQLException {
