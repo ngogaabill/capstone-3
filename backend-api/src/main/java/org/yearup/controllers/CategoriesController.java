@@ -66,7 +66,7 @@ public class CategoriesController {
 
 
     @PostMapping
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public Category addCategory(@RequestBody Category category) {
         try {
             return this.categoryDao.create(category);
@@ -76,7 +76,7 @@ public class CategoriesController {
     }
 
     @PutMapping("{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public void updateCategory(@PathVariable int id, @RequestBody Category category) {
         try {
             this.categoryDao.update(id, category);//fixed method
@@ -87,7 +87,7 @@ public class CategoriesController {
 
 
     @DeleteMapping("{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteCategory(@PathVariable int id) {
         try {
             var category = categoryDao.getById(id);
