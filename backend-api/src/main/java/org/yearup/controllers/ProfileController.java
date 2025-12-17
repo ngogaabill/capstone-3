@@ -31,9 +31,17 @@ public class ProfileController {
     }
 
     @PutMapping
-    public Profile updateProfile(Principal principle, Profile profile) {
-        return null;
+    public Profile updateProfile(Principal principal, @RequestBody Profile profile) {
+
+        String userName = principal.getName();
+        User user = userDao.getByUserName(userName);
+        profile.setUserId(user.getId());
+        // Update the profile
+        Profile updatedProfile = profileDao.update(profile);
+        return updatedProfile;
+
     }
 }
+
 
 

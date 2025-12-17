@@ -70,6 +70,29 @@ public class MySqlProfileDao extends MySqlDaoBase implements ProfileDao {
 
     @Override
     public Profile update(Profile profile) {
-        return null;
+        String sql = "UPDATE profiles SET first_name = ?, last_name = ?, phone = ?, email = ?, " +
+                "address = ?, city = ?, state = ?, zip = ? WHERE user_id = ?";
+
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, profile.getFirstName());
+            ps.setString(2, profile.getLastName());
+            ps.setString(3, profile.getPhone());
+            ps.setString(4, profile.getEmail());
+            ps.setString(5, profile.getAddress());
+            ps.setString(6, profile.getCity());
+            ps.setString(7, profile.getState());
+            ps.setString(8, profile.getZip());
+            ps.setInt(9, profile.getUserId());
+
+            int rowsUpdated = ps.executeUpdate();
+
+            if (rowsUpdated == 0) {
+                return null;
+            }
+            return profile;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
