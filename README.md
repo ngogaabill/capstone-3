@@ -113,28 +113,47 @@ Check the Run tool window for any startup errors (for example, database connecti
 2. Right-click `index.html` → **Open in Browser** → choose your browser.
 
 3. Alternatively, you can locate `frontend-ui/index.html` in Finder / File Explorer and double-click it to open it in a browser.
+---
+
+## Project Features & Implementations
+
+This EasyShop application includes the following implemented features:
+
+### Shopping Cart Functionality
+* **Shopping Cart DAO** (`MySqlShoppingCartDao`) - Handles all database operations for shopping cart items
+* **Shopping Cart Controller** (`ShoppingCartController`) - Manages REST API endpoints for cart operations:
+    * `GET /cart` - Retrieve the current user's shopping cart
+    * `POST /cart/products/{productId}` - Add a product to the cart
+    * `PUT /cart/products/{productId}` - Update product quantity in the cart
+    * `DELETE /cart` - Clear all items from the cart
+* **Bug Fix** - Resolved product duplication issue that occurred during product updates
+
+### User Profile Management
+* Implemented user profile functionality for logged-in users
+* Users can view and manage their account information
+
+### Category Management
+* Full category implementation for product organization
+* Users can browse products by category
+
+### Frontend Enhancements
+* Added color styling and visual improvements to the user interface
 
 ---
 
-## Where to make changes
+## Technologies Used
 
-* **Backend logic** (controllers, models, data access, etc.) is in:
+### Backend
+* Java 17
+* Spring Boot
+* Spring Security
+* MySQL Database
+* Maven
 
-  ```text
-  backend-api/src/main/java/
-  ```
+### Frontend
+* HTML5
+* CSS3
+* JavaScript
+* REST API Integration
 
-* **Backend configuration** (including database settings) is in:
-
-  ```text
-  backend-api/src/main/resources/
-  ```
-
-* **Frontend HTML/CSS/JS** is in the `frontend-ui` folder:
-
-  ```text
-  frontend-ui/index.html
-  frontend-ui/css/
-  frontend-ui/js/
-  frontend-ui/images/
-  ```
+---
